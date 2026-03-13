@@ -31,6 +31,18 @@ func file_exists(path string) bool {
 	return true
 }
 
+func message_box(content string) { // crude. extremely crude.
+
+	file := path.Join(os.TempDir(), "ggb_patcher_message.vbs")
+	pie(os.WriteFile(file, []byte("msgbox \""+content+"\""), 0644))
+
+	ws := exec.Command("wscript.exe", file)
+	ws.Run()
+
+	pie(os.Remove(file))
+
+}
+
 func find_latest_app_version() string {
 
 	re := regexp.MustCompile(`^app-(6\.[0-9A-Za-z\.\-]+)$`)
@@ -148,10 +160,14 @@ func main() {
 				pie(os.Rename(squirrel_exe, original_squirrel_exe))
 				pie(copy.Copy(executable, squirrel_exe))
 
+				message_box("installed successfully")
+
 			} else { // update
 
 				pie(os.Remove(squirrel_exe))
 				pie(copy.Copy(executable, squirrel_exe))
+
+				message_box("updated successfully")
 
 			}
 
@@ -193,6 +209,8 @@ func main() {
 			os.Remove(squirrel_exe)
 			os.Rename(original_squirrel_exe, squirrel_exe)
 		}
+
+		message_box("uninstalled successfully")
 
 	}
 }
