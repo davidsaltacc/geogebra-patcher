@@ -2,7 +2,7 @@
 setlocal EnableDelayedExpansion
 
 set "BASE_EXE_NAME=ggb_patcher"
-set "DEBUG=0"
+set "DEBUG=1"
 set "VERSION=0.1"
 
 call :build "windows" "amd64" "x64" "installer"
@@ -32,7 +32,7 @@ go build -ldflags="-s -w !HFLAG! -X main.BUILD_TYPE=%~4" -o temp.exe ../main.go
 if "%GOARCH%"=="arm64" ( 
     ren temp.exe %name%.exe
 ) else ( 
-    upx -9 -o %name%.exe -q temp.exe 
+    upx --brute -9 -o %name%.exe temp.exe > nul
     del temp.exe
 )
 
