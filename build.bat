@@ -1,5 +1,5 @@
 :: usage:
-:: build.bat [--debug] [--skip-compression]
+:: build.bat [--debug] [--skip-compression] [--devtools]
 :: options:
 :: --debug: compile as console application instead of windows application
 :: --skip-compression: skip upx compression
