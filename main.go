@@ -110,7 +110,7 @@ func main() {
 		pie(err)
 
 		// one file, multiple uses
-		if file_exists(path.Join(path.Dir(current_exe), "update_ggb_old.exe")) { // act as the updater.exe file
+		if file_exists(path.Join(filepath.Dir(current_exe), "update_ggb_old.exe")) { // act as the updater.exe file
 
 			args_without_exe := make([]string, 0)
 			for _, element := range os.Args[1:] {
