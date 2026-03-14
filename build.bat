@@ -32,7 +32,7 @@ go build -ldflags="-s -w !HFLAG! -X main.BUILD_TYPE=%~4" -o temp.exe ../main.go
 if "%GOARCH%"=="arm64" ( 
     ren temp.exe %name%.exe
 ) else ( 
-    upx -9 -o %name%.exe temp.exe > nul
+    upx -9 -o %name%.exe -q temp.exe 
     del temp.exe
 )
 
