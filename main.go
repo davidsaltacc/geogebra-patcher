@@ -44,14 +44,14 @@ func message_box(content string) { // crude. extremely crude.
 
 }
 
-func find_latest_app_version() string {
+func find_latest_app_version(ggb_type string) string {
 
 	re := regexp.MustCompile(`^app-(6\.[0-9A-Za-z\.\-]+)$`)
 
 	local_app_data, err := os.UserCacheDir()
 	pie(err)
 
-	calc_home := path.Join(local_app_data, "GeoGebra_Calculator")
+	calc_home := path.Join(local_app_data, ggb_type)
 
 	entries, err := os.ReadDir(calc_home)
 	pie(err)
@@ -96,13 +96,13 @@ func find_latest_app_version() string {
 
 }
 
-func main() {
+func run(ggb_type string, ggb_type_name string) {
 
 	local_app_data, err := os.UserCacheDir()
 	pie(err)
 
-	original_squirrel_exe := path.Join(local_app_data, "GeoGebra_Calculator\\update_ggb_old.exe")
-	squirrel_exe := path.Join(local_app_data, "GeoGebra_Calculator\\Update.exe")
+	original_squirrel_exe := path.Join(local_app_data, ggb_type+"\\update_ggb_old.exe")
+	squirrel_exe := path.Join(local_app_data, ggb_type+"\\Update.exe")
 
 	switch BUILD_TYPE {
 	case "installer":
@@ -112,6 +112,10 @@ func main() {
 
 		// one file, multiple uses
 		if file_exists(path.Join(filepath.Dir(current_exe), "update_ggb_old.exe")) { // act as the updater.exe file
+
+			if !strings.Contains(filepath.Dir(current_exe), ggb_type) {
+				return
+			}
 
 			args_without_exe := make([]string, 0)
 			for _, element := range os.Args[1:] {
@@ -123,7 +127,7 @@ func main() {
 			update := exec.Command(original_squirrel_exe, args_without_exe...) // run update without launching
 			update.Run()
 
-			latest := find_latest_app_version()
+			latest := find_latest_app_version(ggb_type)
 
 			// --- START CSS PATCHES ---
 
@@ -203,14 +207,14 @@ func main() {
 				pie(os.Rename(squirrel_exe, original_squirrel_exe))
 				pie(copy.Copy(current_exe, squirrel_exe))
 
-				message_box("installed successfully")
+				message_box("Installed successfully for " + ggb_type_name)
 
 			} else { // update
 
 				pie(os.Remove(squirrel_exe))
 				pie(copy.Copy(current_exe, squirrel_exe))
 
-				message_box("updated successfully")
+				message_box("Updated successfully for " + ggb_type_name)
 
 			}
 
@@ -220,7 +224,7 @@ func main() {
 
 		// undo patches
 
-		latest := find_latest_app_version()
+		latest := find_latest_app_version(ggb_type)
 
 		// --- START UNDO CSS PATCHES ---
 
@@ -289,7 +293,22 @@ func main() {
 			os.Rename(original_squirrel_exe, squirrel_exe)
 		}
 
-		message_box("uninstalled successfully")
+		message_box("Uninstalled successfully for " + ggb_type_name)
 
 	}
+}
+
+func main() {
+
+	// calculator suite, the only one you should be using
+	run("GeoGebra_Calculator", "GeoGebra Calculator Suite")
+
+	// classic (simpler) ui
+	run("GeoGebra_6", "GeoGebra Classic 6")
+
+	// standalone apps (400+ mb per app that is literally included in the main ones anyway btw)
+	run("GeoGebra_Graphing", "GeoGebra Graphing Calculator")
+	run("GeoGebra_CAS", "GeoGebra CAS Calculator")
+	run("GeoGebra_Geometry", "GeoGebra Geometry")
+
 }

@@ -1,6 +1,6 @@
 # GeoGebra Patcher (ggb_patcher) 
 
-GeoGebra's Calculator Suite without the eye cancer that is a forced light mode. (At least I couldn't find a option to enable dark mode)
+GeoGebra without the eye cancer that is a forced light mode. (At least I couldn't find a option to enable dark mode)
 
 ### Why
 
@@ -11,7 +11,7 @@ So I created this simple patcher that hacks together a cheap dark mode.
 
 ### How to use
 
-Download the installer executable. Run it. Done. (Assuming you have GeoGebra Calculator Suite installed)
+Download the installer executable. Run it. Done. (Assuming you have GeoGebra Calculator Suite / Classic 6 / any of the standalone apps (why) installed)
 
 ### How to update
 
