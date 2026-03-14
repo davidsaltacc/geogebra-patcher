@@ -15,6 +15,7 @@ import (
 )
 
 var BUILD_TYPE string
+var DEVTOOLS string
 
 const DARK_MODE_CSS_PATCH = "/* ggb_patcher dark mode patch */ body { filter: invert(1) hue-rotate(180deg) brightness(1.2) contrast(0.9); }"
 
@@ -123,6 +124,9 @@ func main() {
 			update.Run()
 
 			latest := find_latest_app_version()
+
+			// --- START CSS PATCHES ---
+
 			fonts_path := filepath.Join(latest, "resources/app/html/css/fonts.css") // fonts.css gets loaded everywhere, so apply css patches in here
 
 			fonts_file, err := os.Open(fonts_path)
@@ -149,6 +153,45 @@ func main() {
 			lines_new = append(lines_new, "/*ggb_patcher*/ "+DARK_MODE_CSS_PATCH)
 
 			pie(os.WriteFile(fonts_path, []byte(strings.Join(lines_new, "\n")), 0644))
+
+			// --- START JS PATCHES ---
+
+			mainjs_path := filepath.Join(latest, "resources/app/main.js")
+
+			mainjs_file, err := os.Open(mainjs_path)
+			defer mainjs_file.Close()
+			pie(err)
+
+			lines = make([]string, 0)
+
+			scanner = bufio.NewScanner(mainjs_file)
+			for scanner.Scan() {
+				lines = append(lines, scanner.Text())
+			}
+
+			pie(scanner.Err())
+
+			lines_new = make([]string, 0)
+
+			devtools_disabled := "// win.webContents.openDevTools()"
+			devtools_enabled := "win.webContents.openDevTools()"
+
+			for _, line := range lines {
+				if strings.Contains(line, devtools_disabled) {
+					if DEVTOOLS == "1" {
+						line = strings.ReplaceAll(line, devtools_disabled, devtools_enabled)
+					}
+				} else if strings.Contains(line, devtools_enabled) {
+					if DEVTOOLS == "0" {
+						line = strings.ReplaceAll(line, devtools_enabled, devtools_disabled)
+					}
+				}
+				lines_new = append(lines_new, line)
+			}
+
+			pie(os.WriteFile(mainjs_path, []byte(strings.Join(lines_new, "\n")), 0644))
+
+			// --- END PATCHES ---
 
 			launch := exec.Command(original_squirrel_exe, os.Args[1:]...) // launch with arguments
 			launch.Run()
@@ -178,6 +221,9 @@ func main() {
 		// undo patches
 
 		latest := find_latest_app_version()
+
+		// --- START UNDO CSS PATCHES ---
+
 		fonts_path := filepath.Join(latest, "resources/app/html/css/fonts.css")
 
 		fonts_file, err := os.Open(fonts_path)
@@ -202,6 +248,39 @@ func main() {
 		}
 
 		pie(os.WriteFile(fonts_path, []byte(strings.Join(lines_new, "\n")), 0644))
+
+		// --- START UNDO JS PATCHES ---
+
+		mainjs_path := filepath.Join(latest, "resources/app/main.js")
+
+		mainjs_file, err := os.Open(mainjs_path)
+		defer mainjs_file.Close()
+		pie(err)
+
+		lines = make([]string, 0)
+
+		scanner = bufio.NewScanner(mainjs_file)
+		for scanner.Scan() {
+			lines = append(lines, scanner.Text())
+		}
+
+		pie(scanner.Err())
+
+		lines_new = make([]string, 0)
+
+		devtools_disabled := "// win.webContents.openDevTools()"
+		devtools_enabled := "win.webContents.openDevTools()"
+
+		for _, line := range lines {
+			if strings.Contains(line, devtools_enabled) && !strings.Contains(line, devtools_disabled) {
+				line = strings.ReplaceAll(line, devtools_enabled, devtools_disabled)
+			}
+			lines_new = append(lines_new, line)
+		}
+
+		pie(os.WriteFile(mainjs_path, []byte(strings.Join(lines_new, "\n")), 0644))
+
+		// --- END UNDO PATCHES ---
 
 		// remove patcher
 
