@@ -2,7 +2,7 @@
 setlocal EnableDelayedExpansion
 
 set "BASE_EXE_NAME=ggb_patcher"
-set "DEBUG=1"
+set "DEBUG=0"
 set "VERSION=0.1"
 
 call :build "windows" "amd64" "x64" "installer"
