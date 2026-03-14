@@ -17,7 +17,7 @@ import (
 var BUILD_TYPE string
 var DEVTOOLS string
 
-const DARK_MODE_CSS_PATCH = "/* ggb_patcher dark mode patch */ body { filter: invert(1) hue-rotate(180deg) brightness(1.2) contrast(0.9); }"
+const DARK_MODE_CSS_PATCH = "/* ggb_patcher dark mode patch */ body { filter: invert(1) hue-rotate(180deg) brightness(1.2) contrast(0.9); } #ggbApplet > main > div.gwt-SplitLayoutPanel canvas { filter: contrast(0.5) brightness(1.35) saturate(4); }"
 
 func pie(err error) { // pie. panic if error
 	if err != nil {
