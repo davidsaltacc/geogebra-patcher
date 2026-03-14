@@ -13,6 +13,10 @@ So I created this simple patcher that hacks together a cheap dark mode.
 
 Download the installer executable. Run it. Done. (Assuming you have GeoGebra Calculator Suite installed)
 
+### How to update
+
+Just download and run a newer installer executable. It will overwrite the old one.
+
 ### How to uninstall
 
 Why would you want to uninstall the very thing that saves you from getting eye cancer? 
