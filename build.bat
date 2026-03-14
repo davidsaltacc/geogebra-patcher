@@ -25,7 +25,7 @@ goto checkArgs
 :checkArgsDone
 
 set "BASE_EXE_NAME=ggb_patcher"
-set "VERSION=0.1"
+set "VERSION=0.1.1"
 
 call :build "windows" "amd64" "x64" "installer"
 call :build "windows" "amd64" "x64" "uninstaller"
