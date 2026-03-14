@@ -1,8 +1,27 @@
+:: usage:
+:: build.bat [--debug] [--skip-compression]
+:: options:
+:: --debug: compile as console application instead of windows application
+:: --skip-compression: skip upx compression
+
 @echo off
 setlocal EnableDelayedExpansion
 
-set "BASE_EXE_NAME=ggb_patcher"
 set "DEBUG=0"
+set "SKIP_COMPRESSION=0"
+
+:checkArgs
+if "%~1"=="" goto checkArgsDone
+
+if /I "%~1"=="--debug" set "DEBUG=1"
+if /I "%~1"=="--skip-compression" set "SKIP_COMPRESSION=1"
+
+shift
+goto checkArgs
+
+:checkArgsDone
+
+set "BASE_EXE_NAME=ggb_patcher"
 set "VERSION=0.1"
 
 call :build "windows" "amd64" "x64" "installer"
@@ -29,11 +48,15 @@ del temp.exe > nul 2>&1
 
 go build -ldflags="-s -w !HFLAG! -X main.BUILD_TYPE=%~4" -o temp.exe ../main.go
 
-if "%GOARCH%"=="arm64" ( 
+if "%GOARCH%"=="arm64" (
     ren temp.exe %name%.exe
-) else ( 
-    upx --brute -9 -o %name%.exe temp.exe > nul
-    del temp.exe
+) else (
+    if "%SKIP_COMPRESSION%"=="1" (
+        ren temp.exe %name%.exe 
+    ) else (
+        upx --brute -9 -o %name%.exe temp.exe > nul
+        del temp.exe
+    )
 )
 
 echo Built %~4 executable for %~3 %~1
