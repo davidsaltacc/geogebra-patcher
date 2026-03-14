@@ -5,9 +5,6 @@ set "BASE_EXE_NAME=ggb_patcher"
 set "DEBUG=0"
 set "VERSION=0.1"
 
-call :build "windows" "386" "x32" "installer"
-call :build "windows" "386" "x32" "uninstaller"
-
 call :build "windows" "amd64" "x64" "installer"
 call :build "windows" "amd64" "x64" "uninstaller"
 
