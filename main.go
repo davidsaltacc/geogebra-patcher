@@ -106,8 +106,11 @@ func main() {
 	switch BUILD_TYPE {
 	case "installer":
 
+		current_exe, err := os.Executable()
+		pie(err)
+
 		// one file, multiple uses
-		if file_exists(original_squirrel_exe) { // act as the updater.exe file
+		if file_exists(path.Join(path.Dir(current_exe), "update_ggb_old.exe")) { // act as the updater.exe file
 
 			args_without_exe := make([]string, 0)
 			for _, element := range os.Args[1:] {
@@ -152,20 +155,17 @@ func main() {
 
 		} else { // act as the normal installer
 
-			executable, err := os.Executable()
-			pie(err)
-
 			if !file_exists(original_squirrel_exe) { // install
 
 				pie(os.Rename(squirrel_exe, original_squirrel_exe))
-				pie(copy.Copy(executable, squirrel_exe))
+				pie(copy.Copy(current_exe, squirrel_exe))
 
 				message_box("installed successfully")
 
 			} else { // update
 
 				pie(os.Remove(squirrel_exe))
-				pie(copy.Copy(executable, squirrel_exe))
+				pie(copy.Copy(current_exe, squirrel_exe))
 
 				message_box("updated successfully")
 
